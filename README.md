@@ -43,7 +43,7 @@ THEN I am prompted to select an employee to update and their new role and this i
 You'll need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, and the [Inquirer package](https://www.npmjs.com/package/inquirer/v/8.2.4). to interact with the user via the command line.
 
 IMPORTANT
-In order to install inquirer, please use 
+In order to install `inquirer`, please use 
 
 ``````
 npm i inquirer@8.2.4.
