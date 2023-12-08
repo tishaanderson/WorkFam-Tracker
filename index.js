@@ -10,8 +10,14 @@ const db = mysql.createConnection({
 });
 //TODO: add a require const pulling in the functions i create for the switch statement
 function viewEmployees () {
- db.query('SELECT * FROM employees', function (err, results) {
+ db.query('SELECT * FROM employee', function (err, results) {
+  if (err) {
+    console.error('Error displaying employee log. Please try again.', err);
+    return;
+  }
+    console.log('All Employees:');
     console.table(results);
+    init();
   });
 }
 //initial function for user to choose their task
