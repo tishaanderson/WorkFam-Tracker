@@ -1,6 +1,19 @@
 const inquirer = require('inquirer');
-//TODO: add a require const pulling in the functions i create for the switch statement
+const mysql = require('mysql2');
+require('dotenv').config();
 
+const db = mysql.createConnection({
+  host: "localhost",
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+});
+//TODO: add a require const pulling in the functions i create for the switch statement
+function viewEmployees () {
+ db.query('SELECT * FROM employees', function (err, results) {
+    console.table(results);
+  });
+}
 //initial function for user to choose their task
 function init() {
   inquirer.prompt([
@@ -16,6 +29,7 @@ function init() {
         'Add a role',
         'Add an employee',
         'Update an employee role',
+        'Exit'
       ]
     }
   ]) //Switch statement to call the next function based on user input
@@ -45,6 +59,8 @@ function init() {
         break;   
     }
   });
+
+
 }
 
 init();
