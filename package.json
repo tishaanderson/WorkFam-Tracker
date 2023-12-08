@@ -2,10 +2,10 @@
   "name": "workfam-tracker",
   "version": "1.0.0",
   "description": "- [Description](#description)\r - [Installation](#installation)\r - [Usage](#usage)\r - [Test Sample](#test-sample)\r - [Credits](#credits)\r - [License](#license)",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
