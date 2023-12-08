@@ -15,9 +15,9 @@ VALUES  ("Secret Agent", 100000, 1),
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES  ("Malory", "Archer", 2, 1),
         ("Sterling", "Archer", 1, 1),
-        ("Lana", "Kane", 1, 2), 
+        ("Lana", "Kane", 1, 1), 
         ("Cyril", "Figgis", 4, 2), 
-        ("Cheryl", "Tunt", 6, 2),
         ("Pam", "Poovey", 6, 2), 
-        ("Ray", "Gillette", 1, 2),
+        ("Cheryl", "Tunt", 6, 5),
+        ("Ray", "Gillette", 1, 1),
         ("Algernop", "Krieger", 7, 1);
