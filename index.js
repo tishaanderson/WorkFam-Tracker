@@ -11,28 +11,6 @@ const db = mysql.createConnection({
   password: process.env.DB_PASSWORD,
 });
 
-//function that asks the user if they wish to continue after they've made selections within the app 
-function promptToContinue() {
-  inquirer
-    .prompt({
-      type: 'confirm',
-      name: 'continue',
-      message: 'Do you want to continue?',
-      default: true,
-    })
-    .then((answer) => {
-      if(answer.continue) {
-        init();
-      } else {
-        console.log('Exiting application');
-        db.end();
-      }
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-}
-
 //function pulls all department information from the department table in the database
 function viewDepartments () {
   db.query(
@@ -43,7 +21,7 @@ function viewDepartments () {
    }
      console.log('All Departments:');
      console.table(results);
-     promptToContinue();
+     init(); //calls initial function to restart app and ask which task the user wishes to complete
    });
  }
 
@@ -57,7 +35,7 @@ function viewDepartments () {
    }
      console.log('All Roles:');
      console.table(results);
-     promptToContinue();
+     init(); //calls initial function to restart app and ask which task the user wishes to complete
    });
  }
 
@@ -81,7 +59,7 @@ function viewEmployees () {
   }
     console.log('All Employees:');
     console.table(results);
-    promptToContinue();
+    init(); //calls initial function to restart app and ask which task the user wishes to complete
   });
 }
 
@@ -297,25 +275,12 @@ function updateEmployeeRole () {
 
 //initial function for user to choose their task
 function init() {
-  inquirer.prompt([
+  inquirer.prompt([ //question prompts to start the app off with guiding the user to their desired task
     {
       type: 'list',
       name: 'task',
       message: 'What would you like to do?',
       choices: [
-        // {
-        //   name: "View all departments",
-        //   value: "",
-          
-        // },
-        // {
-        //   name: "View all roles",
-        //   value: "VIEW_DEPARTMENTS",
-        // },
-        // {
-        //   name: "View all departments",
-        //   value: "VIEW_DEPARTMENTS",
-        // },
         'View all departments',
         'View all roles',
         'View all employees',
@@ -350,14 +315,16 @@ function init() {
       case 'Update an employee role':
         updateEmployeeRole();
         break;
+      case 'Exit':
+        console.log('Exiting the application...Goodbye!');
+        process.exit(0);
+        break;
       default:
         console.log('Please select a valid task.')
         init();
         break;   
     }
   });
-
-
 }
 
-init();
+init(); //prompts initial questions to ask user which tasks they want to complete
