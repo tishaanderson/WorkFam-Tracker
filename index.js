@@ -237,15 +237,16 @@ function addNewEmployee () {
   });
 }
 
+//function prompts user with questions regarding the NEW ROLE for the EMPLOYEE they wish to UPDATE the EMPLOYEES_DB
 function updateEmployeeRole () {
-  db.query(
+  db.query( //pulls the EMPLOYEE TABLE names in preparation of asking the user to choose which EMPLOYEE they are UPDATING
     'SELECT id, CONCAT(first_name, " ", last_name) AS employee FROM employee', function (err, employees) {
       if(err) {
         console.error('Error loading employee. Please try again.', err);
         return;
       }
 
-      db.query(
+      db.query( //pulls the ROLE TABLE names in preparation of asking the user to choose which ROLE they are UPDATING for the SELECTED EMPLOYEE
         'SELECT id, title FROM role', function (err, roles) {
           if(err) {
             console.error('Error loading roles. Please try again.', err);
@@ -253,12 +254,12 @@ function updateEmployeeRole () {
           }
              
           inquirer
-          .prompt([
+          .prompt([ //questions that populate for user to answer regarding the UPDATED ROLE for the SELECTED EMPLOYEE
             {
               type: 'list',
               name: 'selectEmployee',
               message: 'Select which employee to update:',
-              choices: employees.map(employee => ({
+              choices: employees.map(employee => ({ //populates the EMPLOYEE options automatically for the user to select which to UPDATE
                 name: employee.employee,
                 value: employee.id,
               })),
@@ -267,7 +268,7 @@ function updateEmployeeRole () {
               type: 'list',
               name: 'updatedRole',
               message: "Select the chosen employee's new role:",
-              choices: roles.map(role => ({ //populates the ROLES options automatically for the user to select from regarding the NEW EMPLOYEE
+              choices: roles.map(role => ({ //populates the ROLE options automatically for the user to select which to UPDATE
                 name: role.title,
                 value: role.id
               })),
@@ -276,14 +277,14 @@ function updateEmployeeRole () {
           .then(answers => {
             const { selectEmployee, updatedRole } = answers;
             
-            db.query(
+            db.query( //adds NEW EMPLOYEE info to EMPLOYEE TABLE in EMPLOYEES_DB
               'UPDATE employee SET role_id = ? WHERE id = ?', [updatedRole, selectEmployee], (err, results) => {
                 if(err) {
                   console.error('Error updating employee role:', err);
                   return;
                 }
                 console.log(`Successfully updated '${selectEmployee}''s role!`);
-                viewEmployees();
+                viewEmployees(); //displays the UPDATED EMPLOYEE TABLE with the EMPLOYEE'S UPDATED ROLE
               }
             );
           })
@@ -293,7 +294,6 @@ function updateEmployeeRole () {
       });
   });
 }
- 
 
 //initial function for user to choose their task
 function init() {
