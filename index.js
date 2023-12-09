@@ -1,7 +1,9 @@
+//pulling required packages
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 require('dotenv').config();
 
+//connecting my database security info
 const db = mysql.createConnection({
   host: "localhost",
   database: process.env.DB_NAME,
@@ -9,6 +11,7 @@ const db = mysql.createConnection({
   password: process.env.DB_PASSWORD,
 });
 
+//function that asks the user if they wish to continue after they've made selections within the app 
 function promptToContinue() {
   inquirer
     .prompt({
@@ -30,8 +33,10 @@ function promptToContinue() {
     });
 }
 
+//function pulls all department information from the department table in the database
 function viewDepartments () {
-  db.query('SELECT id AS department_id, name AS department_name FROM department', function (err, results) {
+  db.query(
+    'SELECT id AS department_id, name AS department_name FROM department', function (err, results) {
    if (err) {
      console.error('Error displaying departments. Please try again.', err);
      return;
@@ -42,8 +47,10 @@ function viewDepartments () {
    });
  }
 
+ //function pulls all role information from the role table in the database
  function viewRoles () {
-  db.query('SELECT * FROM role', function (err, results) {
+  db.query(
+    'SELECT * FROM role', function (err, results) {
    if (err) {
      console.error('Error displaying all roles. Please try again.', err);
      return;
@@ -54,6 +61,7 @@ function viewDepartments () {
    });
  }
 
+ //function pulls all employee information from the employee table in the database
 function viewEmployees () {
  db.query(
   `SELECT 
@@ -76,50 +84,87 @@ function viewEmployees () {
     promptToContinue();
   });
 }
-function addNewRole () {
+
+ //function prompts user with questions regarding the new department they wish to add to the department table within the database
+function addNewDepartment () {
   inquirer
     .prompt([
       {
         type: 'input',
-        name: 'new_role_title',
-        message: 'Enter the title for the new role:',
-      },
-      {
-        type: 'input',
-        name: 'new_role_salary',
-        message: 'Enter the salary for the new role:',
-      },
-      {
-        type: 'input',
-        name: 'new_role_department',
-        message: 'Select the department for the new role:',
-        choics: departments.map(department => ({
-          name: department.name,
-          value: department.id,
-        })),
+        name: 'new_department_title',
+        messaged: 'Enter the new department title:',
       },
     ])
-    .then(answers => {
-      const { new_role_title, new_role_salary, new_role_department } = answers;
-      db.query(
-        `INSERT INTO role (new_role_title, new_role_salary, new_role_department)
-        VALUES (${new_role_title}, ${new_role_salary}, ${new_role_department});`, function (err, results) {
-          console.log(new_role_title + "has been added to the role table");
-          if (err) throw err;
-          console.log('')
-        })
+    .then((answers) => {
+      const { new_department_title } = answers;
+
+      db.query( //adds new department name to department table
+        `INSERT INTO department (name) VALUES (?)`, [new_department_title], (err, results) => {
+          if (err) {
+           console.error('Error adding new department:', err);
+          return; 
+          }   
+
+        console.log(`New department '${new_department_title}' added successfully! Here's your updated list of departments:`);
+        
+        viewDepartments(); //displays the updated department table with the department title the user newly added
+        }
+      );
     })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
 
+ //function prompts user with questions regarding the new role they wish to add to the role table within the database
+function addNewRole () {  
+  db.query(//pulls the department table info in preparation of asking the user to choose which department they are wanting their newly created role to be a part of
+    'SELECT id, name FROM department', function (err, departments) {
+    if (err) {
+      console.error('Error loading departments. Please try again.', err);
+      return;
+    }
+    
+    inquirer
+      .prompt([
+        {
+          type: 'input',
+          name: 'new_role_title',
+          message: 'Enter the title for the new role:',
+        },
+        {
+          type: 'input',
+          name: 'new_role_salary',
+          message: 'Enter the salary for the new role:',
+        },
+        {
+          type: 'list',
+          name: 'new_role_department',
+          message: 'Select the department for the new role:',
+          choices: departments.map(department => ({
+            name: department.name,
+            value: department.id,
+          })),
+        },
+      ])
+      .then(answers => {
+      const { new_role_title, new_role_salary, new_role_department } = answers;
 
-  // db.query(`INSERT INTO ${} FROM employee`, function (err, results) {
-  //  if (err) {
-  //    console.error('Error displaying all employees. Please try again.', err);
-  //    return;
-  //  }
-  //    console.log('All Employees:');
-  //    console.table(results);
-  //    promptToContinue();
-  //  });
+      db.query(
+        'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [new_role_title, new_role_salary, new_role_department], function (err, results) {
+          if (err) {
+            console.error('Error adding new role:', err);
+            return;
+          }
+          console.log(`New role '${new_role_title}' added successfully! Here's your updated list of roles:`);
+          viewRoles();
+        }
+      );
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  });
  }
 
 function addNewEmployee () {
@@ -170,9 +215,9 @@ function init() {
         'View all departments',
         'View all roles',
         'View all employees',
-        'Add a department',
-        'Add a role',
-        'Add an employee',
+        'Add a new department',
+        'Add a new role',
+        'Add a new employee',
         'Update an employee role',
         'Exit'
       ]
@@ -189,13 +234,17 @@ function init() {
       case 'View all employees':
         viewEmployees();
         break;
-      case 'Add a role':
+      case 'Add a new department':
+        addNewDepartment();
+        break;
+      case 'Add a new role':
         addNewRole();
-      case 'Add an employee':
+        break;
+      case 'Add a new employee':
         addNewEmployee();
         break;
       case 'Update an employee role':
-        updateEmployee();
+        updateEmployeeRole();
         break;
       default:
         console.log('Please select a valid task.')
