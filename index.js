@@ -168,15 +168,16 @@ function addNewRole () {
   });
  }
 
+ //function prompts user with questions regarding the NEW EMPLOYEE they wish to add to the EMPLOYEE TABLE within the EMPLOYEES_DB
 function addNewEmployee () {
-  db.query(
+  db.query( //pulls the ROLE TABLE info in preparation of asking the user to choose which role they are wanting their NEWLY CREATED EMPLOYEE to be a part of
     'SELECT * FROM role', function(err, roles) {
       if(err) {
         console.error('Error loading roles. Please try again.', err);
         return;
       }
 
-      db.query(
+      db.query( //pulls the MANAGER INFO FROM THE EMPLOYEE TABLE in preparation of asking the user to choose which MANAGER they are wanting their NEWLY CREATED EMPLOYEE to report to
         'SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee', function (err, managers) {
           if(err) {
             console.error('Error loading managers:', err);
@@ -184,7 +185,7 @@ function addNewEmployee () {
           }
 
           inquirer
-        .prompt([
+        .prompt([ //questions that populate for user to answer regarding the NEW EMPLOYEE they CREATE
           {
             type: 'input',
             name: 'new_employee_first',
@@ -199,7 +200,7 @@ function addNewEmployee () {
             type: 'list',
             name: 'new_employee_role',
             message: 'Select the ROLE of the new employee:',
-            choices: roles.map(role => ({
+            choices: roles.map(role => ({ //populates the ROLES options automatically for the user to select from regarding the NEW EMPLOYEE
               name: role.title,
               value: role.id
             })),
@@ -208,7 +209,7 @@ function addNewEmployee () {
             type: 'list',
             name: 'new_employee_manager',
             message: 'Select the MANAGER of the new employee:',
-            choices: managers.map(manager => ({
+            choices: managers.map(manager => ({ //populates the MANAGER options automatically for the user to select from regarding the NEW EMPLOYEE
               name: manager.manager || 'No manager',
               value: manager.id,
             })),
@@ -217,7 +218,7 @@ function addNewEmployee () {
           .then(answers => {
             const { new_employee_first, new_employee_last, new_employee_role, new_employee_manager } = answers;
 
-            db.query(
+            db.query( //adds NEW EMPLOYEE info to EMPLOYEE TABLE in EMPLOYEES_DB
               'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [new_employee_first, new_employee_last, new_employee_role, new_employee_manager], function (err, results) {
                 if(err) {
                   console.error('Error adding new employee:', err);
@@ -225,7 +226,7 @@ function addNewEmployee () {
                 }
                 console.log(`New employee, '${new_employee_first} ${new_employee_last}', added successfully! Here is your updated EMPLOYEE TABLE:`);
 
-                viewEmployees();
+                viewEmployees(); //displays the UPDATED EMPLOYEE TABLE with the NEW EMPLOYEE INFO that the user added
               }
             );
           })
