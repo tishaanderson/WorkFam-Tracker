@@ -85,10 +85,10 @@ function viewEmployees () {
   });
 }
 
- //function prompts user with questions regarding the new department they wish to add to the department table within the database
+ //function prompts user with questions regarding the NEW DEPARTMENT they wish to add to the DEPARTMENT TABLE within the EMPLOYEES_DB
 function addNewDepartment () {
   inquirer
-    .prompt([
+    .prompt([ //questions that populate for user to answer regarding the NEW DEPARTMENT they CREATE
       {
         type: 'input',
         name: 'new_department_title',
@@ -98,7 +98,7 @@ function addNewDepartment () {
     .then((answers) => {
       const { new_department_title } = answers;
 
-      db.query( //adds new department name to department table
+      db.query( //adds NEW DEPARTMENT TITLE to DEPARTMENT TABLE
         `INSERT INTO department (name) VALUES (?)`, [new_department_title], (err, results) => {
           if (err) {
            console.error('Error adding new department:', err);
@@ -107,7 +107,7 @@ function addNewDepartment () {
 
         console.log(`New department '${new_department_title}' added successfully! Here's your updated list of departments:`);
         
-        viewDepartments(); //displays the updated department table with the department title the user newly added
+        viewDepartments(); //displays the UPDATED DEPARTMENT TABLE with the NEW DEPARTMENT TITLE that the user added
         }
       );
     })
@@ -116,9 +116,9 @@ function addNewDepartment () {
     });
 }
 
- //function prompts user with questions regarding the new role they wish to add to the role table within the database
+ //function prompts user with questions regarding the NEW ROLE they wish to add to the ROLE TABLE within the EMPLOYEES_DB
 function addNewRole () {  
-  db.query(//pulls the department table info in preparation of asking the user to choose which department they are wanting their newly created role to be a part of
+  db.query(//pulls the DEPARTMENT TABLE info in preparation of asking the user to choose which department they are wanting their NEWLY CREATED ROLE to be a part of
     'SELECT id, name FROM department', function (err, departments) {
     if (err) {
       console.error('Error loading departments. Please try again.', err);
@@ -126,7 +126,7 @@ function addNewRole () {
     }
     
     inquirer
-      .prompt([
+      .prompt([ //questions that populate for user to answer regarding the NEW ROLE they CREATE
         {
           type: 'input',
           name: 'new_role_title',
@@ -141,7 +141,7 @@ function addNewRole () {
           type: 'list',
           name: 'new_role_department',
           message: 'Select the department for the new role:',
-          choices: departments.map(department => ({
+          choices: departments.map(department => ({ //populates the DEPARTMENT options automatically for the user to select from regarding the NEW ROLE
             name: department.name,
             value: department.id,
           })),
@@ -150,14 +150,15 @@ function addNewRole () {
       .then(answers => {
       const { new_role_title, new_role_salary, new_role_department } = answers;
 
-      db.query(
+      db.query( //adds NEW ROLE TITLE to ROLE TABLE in EMPLOYEES_DB
         'INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [new_role_title, new_role_salary, new_role_department], function (err, results) {
           if (err) {
             console.error('Error adding new role:', err);
             return;
           }
           console.log(`New role '${new_role_title}' added successfully! Here's your updated list of roles:`);
-          viewRoles();
+          
+          viewRoles(); //displays the UPDATED ROLE TABLE with the NEW ROLE INFO that the user added
         }
       );
     })
