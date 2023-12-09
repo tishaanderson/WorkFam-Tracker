@@ -185,69 +185,115 @@ function addNewEmployee () {
           }
 
           inquirer
-        .prompt([ //questions that populate for user to answer regarding the NEW EMPLOYEE they CREATE
-          {
-            type: 'input',
-            name: 'new_employee_first',
-            message: 'Enter the FIRST NAME of the new employee:',
-          },
-          {
-            type: 'input',
-            name: 'new_employee_last',
-            message: 'Enter the LAST NAME of the new employee:',
-          },
-          {
-            type: 'list',
-            name: 'new_employee_role',
-            message: 'Select the ROLE of the new employee:',
-            choices: roles.map(role => ({ //populates the ROLES options automatically for the user to select from regarding the NEW EMPLOYEE
-              name: role.title,
-              value: role.id
-            })),
-          },
-          {
-            type: 'list',
-            name: 'new_employee_manager',
-            message: 'Select the MANAGER of the new employee:',
-            choices: managers.map(manager => ({ //populates the MANAGER options automatically for the user to select from regarding the NEW EMPLOYEE
-              name: manager.manager || 'No manager',
-              value: manager.id,
-            })),
-          },
+            .prompt([ //questions that populate for user to answer regarding the NEW EMPLOYEE they CREATE
+              {
+                type: 'input',
+                name: 'new_employee_first',
+                message: 'Enter the FIRST NAME of the new employee:',
+              },
+              {
+                type: 'input',
+                name: 'new_employee_last',
+                message: 'Enter the LAST NAME of the new employee:',
+              },
+              {
+                type: 'list',
+                name: 'new_employee_role',
+                message: 'Select the ROLE of the new employee:',
+                choices: roles.map(role => ({ //populates the ROLES options automatically for the user to select from regarding the NEW EMPLOYEE
+                  name: role.title,
+                  value: role.id
+                })),
+              },
+              {
+                type: 'list',
+                name: 'new_employee_manager',
+                message: 'Select the MANAGER of the new employee:',
+                choices: managers.map(manager => ({ //populates the MANAGER options automatically for the user to select from regarding the NEW EMPLOYEE
+                  name: manager.manager || 'No manager',
+                  value: manager.id,
+                })),
+              },
+              ])
+              .then(answers => {
+                const { new_employee_first, new_employee_last, new_employee_role, new_employee_manager } = answers;
+
+                db.query( //adds NEW EMPLOYEE info to EMPLOYEE TABLE in EMPLOYEES_DB
+                  'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [new_employee_first, new_employee_last, new_employee_role, new_employee_manager], function (err, results) {
+                    if(err) {
+                      console.error('Error adding new employee:', err);
+                      return;
+                    }
+                    console.log(`New employee, '${new_employee_first} ${new_employee_last}', added successfully! Here is your updated EMPLOYEE TABLE:`);
+
+                    viewEmployees(); //displays the UPDATED EMPLOYEE TABLE with the NEW EMPLOYEE INFO that the user added
+                  }
+                );
+              })
+              .catch(error => {
+                console.error('Error:', error);
+            });
+      });      
+  });
+}
+
+function updateEmployeeRole () {
+  db.query(
+    'SELECT id, CONCAT(first_name, " ", last_name) AS employee FROM employee', function (err, employees) {
+      if(err) {
+        console.error('Error loading employee. Please try again.', err);
+        return;
+      }
+
+      db.query(
+        'SELECT id, title FROM role', function (err, roles) {
+          if(err) {
+            console.error('Error loading roles. Please try again.', err);
+            return;
+          }
+             
+          inquirer
+          .prompt([
+            {
+              type: 'list',
+              name: 'selectEmployee',
+              message: 'Select which employee to update:',
+              choices: employees.map(employee => ({
+                name: employee.employee,
+                value: employee.id,
+              })),
+            },
+            {
+              type: 'list',
+              name: 'updatedRole',
+              message: "Select the chosen employee's new role:",
+              choices: roles.map(role => ({ //populates the ROLES options automatically for the user to select from regarding the NEW EMPLOYEE
+                name: role.title,
+                value: role.id
+              })),
+            },
           ])
           .then(answers => {
-            const { new_employee_first, new_employee_last, new_employee_role, new_employee_manager } = answers;
-
-            db.query( //adds NEW EMPLOYEE info to EMPLOYEE TABLE in EMPLOYEES_DB
-              'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [new_employee_first, new_employee_last, new_employee_role, new_employee_manager], function (err, results) {
+            const { selectEmployee, updatedRole } = answers;
+            
+            db.query(
+              'UPDATE employee SET role_id = ? WHERE id = ?', [updatedRole, selectEmployee], (err, results) => {
                 if(err) {
-                  console.error('Error adding new employee:', err);
+                  console.error('Error updating employee role:', err);
                   return;
                 }
-                console.log(`New employee, '${new_employee_first} ${new_employee_last}', added successfully! Here is your updated EMPLOYEE TABLE:`);
-
-                viewEmployees(); //displays the UPDATED EMPLOYEE TABLE with the NEW EMPLOYEE INFO that the user added
+                console.log(`Successfully updated '${selectEmployee}''s role!`);
+                viewEmployees();
               }
             );
           })
           .catch(error => {
             console.error('Error:', error);
           });
-        });      
-    });
+      });
+  });
 }
-
-function updateEmployee () {
-  db.query('SELECT * FROM employee', function (err, results) {
-   if (err) {
-     console.error('Error displaying all employees. Please try again.', err);
-     return;
-   }
-     console.log('All Employees:');
-     console.table(results);
-     promptToContinue();
-   });
- }
+ 
 
 //initial function for user to choose their task
 function init() {

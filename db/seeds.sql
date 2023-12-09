@@ -19,5 +19,5 @@ VALUES  ("Malory", "Archer", 2, NULL),
         ("Cyril", "Figgis", 3, 2), 
         ("Pam", "Poovey", 4, 2), 
         ("Cheryl", "Tunt", 6, 5),
-        ("Ray", "Gillette", 1, 1),
+        ("Ray", "Gillette", 5, 1),
         ("Algernop", "Krieger", 7, 1);
