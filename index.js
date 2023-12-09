@@ -105,7 +105,7 @@ function addNewDepartment () {
           return; 
           }   
 
-        console.log(`New department '${new_department_title}' added successfully! Here's your updated list of departments:`);
+        console.log(`New department, '${new_department_title}', added successfully! Here's your updated DEPARTMENT TABLE:`);
         
         viewDepartments(); //displays the UPDATED DEPARTMENT TABLE with the NEW DEPARTMENT TITLE that the user added
         }
@@ -156,8 +156,8 @@ function addNewRole () {
             console.error('Error adding new role:', err);
             return;
           }
-          console.log(`New role '${new_role_title}' added successfully! Here's your updated list of roles:`);
-          
+          console.log(`New role, '${new_role_title}', added successfully! Here's your updated ROLE TABLE:`);
+
           viewRoles(); //displays the UPDATED ROLE TABLE with the NEW ROLE INFO that the user added
         }
       );
@@ -169,16 +169,72 @@ function addNewRole () {
  }
 
 function addNewEmployee () {
-  db.query('SELECT * FROM employee', function (err, results) {
-   if (err) {
-     console.error('Error displaying all employees. Please try again.', err);
-     return;
-   }
-     console.log('All Employees:');
-     console.table(results);
-     promptToContinue();
-   });
- }
+  db.query(
+    'SELECT * FROM role', function(err, roles) {
+      if(err) {
+        console.error('Error loading roles. Please try again.', err);
+        return;
+      }
+
+      db.query(
+        'SELECT id, CONCAT(first_name, " ", last_name) AS manager FROM employee', function (err, managers) {
+          if(err) {
+            console.error('Error loading managers:', err);
+            return;
+          }
+
+          inquirer
+        .prompt([
+          {
+            type: 'input',
+            name: 'new_employee_first',
+            message: 'Enter the FIRST NAME of the new employee:',
+          },
+          {
+            type: 'input',
+            name: 'new_employee_last',
+            message: 'Enter the LAST NAME of the new employee:',
+          },
+          {
+            type: 'list',
+            name: 'new_employee_role',
+            message: 'Select the ROLE of the new employee:',
+            choices: roles.map(role => ({
+              name: role.title,
+              value: role.id
+            })),
+          },
+          {
+            type: 'list',
+            name: 'new_employee_manager',
+            message: 'Select the MANAGER of the new employee:',
+            choices: managers.map(manager => ({
+              name: manager.manager || 'No manager',
+              value: manager.id,
+            })),
+          },
+          ])
+          .then(answers => {
+            const { new_employee_first, new_employee_last, new_employee_role, new_employee_manager } = answers;
+
+            db.query(
+              'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [new_employee_first, new_employee_last, new_employee_role, new_employee_manager], function (err, results) {
+                if(err) {
+                  console.error('Error adding new employee:', err);
+                  return;
+                }
+                console.log(`New employee, '${new_employee_first} ${new_employee_last}', added successfully! Here is your updated EMPLOYEE TABLE:`);
+
+                viewEmployees();
+              }
+            );
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        });      
+    });
+}
 
 function updateEmployee () {
   db.query('SELECT * FROM employee', function (err, results) {
