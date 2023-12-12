@@ -34,39 +34,63 @@ In order to secure your password, you may want to create a `.env` file to store 
 
 You might also want to make your queries asynchronous. MySQL2 exposes a .promise() function on Connections to upgrade an existing non-Promise connection to use Promises. To learn more and make your queries asynchronous, refer to the [npm documentation on MySQL2](https://www.npmjs.com/package/mysql2).
 
-Design the database schema as shown in the following image:
-
 ## Usage
 
-Once all packages are downloaded, start the app by entering the following in the command terminal: 
+Once all packages are downloaded, login to your MySQL using the following command:
+
+``````
+mysql -uroot -p
+``````
+
+
+<img width="50%" alt="MySQL Login Example Screenshot" src="./images/MySQL-login.png">
+
+
+
+Then, enter you want to source your sql files. Do this by entering `source schema.sql;` and `source seeds.sql;`. Remember, if you are not inside the `db` folder you will have to add `./db/` before each file. 
+
+
+<img width="50%" alt="MySQL sourcing files example screenshot" src="./images/Source-SQL-Files.png">
+
+Next, `exit` from MySQL and start the app by entering the following in the command terminal: 
 
 ``````
 npm start
 ``````
+
 You will then be presented with the following options:
 
 ``````
 - View All Departments
 - View All Roles
 - View All Employees
-- Add a Department
-- Add a Role
-- Add an Employee
-- Update a Employee Role
+- Add a New Department
+- Add a New Role
+- Add a New Employee
+- Update an Employee Role
+
 ``````
+
 You can use the `up` and `down` arrow keys on your keboard to scroll through the task choices and then click the `enter` button to make your selection.
 
 When the `View All Departments` choice is selected, a formatted table showing all department names and department IDs will be displayed.
 
+
 When the `View All Roles` choice is selected, a formatted table showing all job titles, along with, the role ID, the department that role belongs to, and the salary for that role will be displayed.
+
+
 
 When the `View All Employees` choice is selected, a formatted table showing employee data, including employee IDs, first names, last names, job titles, departments, salaries, and managers that the employees report to will be displayed.
 
+
 When the `Add a Department` choice is selected, the user will be prompted to enter the name of the new department and that department will automatically be added to the database.
 
-When the `Add a Role` choice is selected, the user will be prompted to enter the name, salary and department for the new role and that role will automatically be added to the database.
+
+When the `Add a Role` choice is selected, the user will be prompted to enter the name, salary and department for the new role and that role will automatically be added to the database
+
 
 When the `Add an Employee` choice is selected, the user will be prompted to enter the employee's first name, last name, role, and manager and that employee will automatically be added to the database.
+
 
 Lastly, when the `Update an Employee Role` choice is selected, the user will be prompted to select an employee to update and, then, select their new role. This information will automatically be updated in the database.
 
@@ -74,7 +98,13 @@ Each time the user makes a change to the database, the new  table will be displa
 
 Once the user is finished with their task, they may select `Exit` to end the application.
 
+
 ### Test Sample
+
+App start up questions after entering `npm start` in command terminal:
+
+<img width="50%" alt="Initial Task Questions Screenshot" src="./images/NPMStart.png">
+
 
 
 
