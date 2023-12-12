@@ -106,6 +106,7 @@ App start up questions after entering `npm start` in command terminal:
 <img width="50%" alt="Initial Task Questions Screenshot" src="./images/NPMStart.png">
 
 
+[WorkFam Tracker Test Video.mp4.webm](https://github.com/tishaanderson/WorkFam-Tracker/assets/136303804/1f97584d-a0a8-4166-a1ab-8616fd40164f)
 
 
 ### Credits
